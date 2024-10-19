@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="pink">#E91E63</color>
+    <color name="beguni">#9C27B0</color>
+    <color name="orange">#F44336</color>
+    <color name="orange1">#F87268</color>
+    <color name="beguni2">#673AB7</color>
+    <color name="green">#3BAF40</color>
+    <color name="green2">#357838</color>
+    <color name="editText">#FAFAFA</color>
+    <color name="text_color">#34A751</color>
+
+</resources>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "434899639211",
+    "project_id": "contactguard-b69f7",
+    "storage_bucket": "contactguard-b69f7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434899639211:android:7b7208c5c81e064e6e10ee",
+        "android_client_info": {
+          "package_name": "com.example.contactguard"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhXOT-XXNXR8baYZ0axLHINl53hteD6FY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
