@@ -17,6 +17,7 @@ class AuthSignUpFragment : Fragment(R.layout.fragment_auth_sign_up) {
         super.onCreate(savedInstanceState)
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         binding = FragmentAuthSignUpBinding.bind(view)
