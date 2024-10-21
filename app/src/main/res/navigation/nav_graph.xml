@@ -19,9 +19,4 @@
             android:id="@+id/action_authSignUpFragment_to_authSignInFragment"
             app:destination="@id/authSignInFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/homeFragment"
-        android:name="com.example.contactguard.HomeFragment"
-        android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
 </navigation>

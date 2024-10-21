@@ -26,8 +26,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
 
     companion object {
         const val CONTACT_PERMISSION_CODE = 1
-        val currentFragment = R.id.homeFragment
-
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

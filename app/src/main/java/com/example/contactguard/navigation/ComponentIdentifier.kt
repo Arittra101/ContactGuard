@@ -1,6 +1,6 @@
 package com.example.contactguard.navigation
 
-const val CONTACT = "CHAT"
+const val CONTACT = "CONTACT"
 const val UNSAVED = "UNSAVED"
 
 val socialNavigationList = listOf(

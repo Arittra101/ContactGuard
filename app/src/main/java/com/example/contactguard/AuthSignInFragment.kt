@@ -25,7 +25,6 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
     companion object {
         val currentFragment = R.id.authSignInFragment
         val destinationFragment = R.id.authSignUpFragment
-        val homeFragment = R.id.homeFragment
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -36,7 +35,8 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
 
 
         if(isLoggedIn()){
-            Navigation.navigate(this, currentFragment, homeFragment, null)
+            val intent = Intent(requireContext(), AuthenticationActivity::class.java)
+            startActivity(intent)
         }
         binding.sendOtp.setOnClickListener {
             val userEmail = binding.etPhoneNo.text.toString()
@@ -87,7 +87,8 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
                     val user = auth.currentUser
                     if (user != null && user.isEmailVerified) {
                         // User email is verified, allow login
-                        Navigation.navigate(this, R.id.authSignInFragment, R.id.homeFragment, null)
+                        val intent = Intent(requireContext(), AuthenticationActivity::class.java)
+                        startActivity(intent)
                         Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
                     } else {
                         // User email is not verified, deny login
