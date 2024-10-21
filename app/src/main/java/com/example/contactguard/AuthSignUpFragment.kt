@@ -17,7 +17,10 @@ class AuthSignUpFragment : Fragment(R.layout.fragment_auth_sign_up) {
         super.onCreate(savedInstanceState)
     }
 
-
+    companion object {
+        val destinationFragment = R.id.authSignInFragment
+        val currentFragment = R.id.authSignUpFragment
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         binding = FragmentAuthSignUpBinding.bind(view)
@@ -26,14 +29,13 @@ class AuthSignUpFragment : Fragment(R.layout.fragment_auth_sign_up) {
         auth = FirebaseAuth.getInstance()
 
         binding.backSignIn.setOnClickListener {
-            Navigation.navigate(this,R.id.authSignInFragment,R.id.authSignInFragment,null)
+            Navigation.navigate(this, currentFragment, destinationFragment,null)
         }
 
         binding.sendOtp.setOnClickListener {
 
             val userEmail = binding.etPhoneNo.text.toString()
             val userPassword = binding.etPassword.text.toString()
-            Navigation.navigate(this,R.id.authSignUpFragment,R.id.authSignInFragment,null)
 
             if(userEmail.isNotBlank() && userPassword.isNotEmpty()){
                 registerUser(userEmail,userPassword)
@@ -51,7 +53,8 @@ class AuthSignUpFragment : Fragment(R.layout.fragment_auth_sign_up) {
                         it.sendEmailVerification()
                             .addOnCompleteListener { emailTask ->
                                 if (emailTask.isSuccessful) {
-                                    Navigation.navigate(this,null,R.id.authSignInFragment,null)
+                                    Navigation.navigate(this,
+                                        currentFragment,R.id.authSignInFragment,null)
                                     Toast.makeText(context, "Verification email sent. Please verify before logging in.", Toast.LENGTH_SHORT).show()
                                 } else {
                                     Toast.makeText(context, "Failed to send verification email: ${emailTask.exception?.message}", Toast.LENGTH_SHORT).show()

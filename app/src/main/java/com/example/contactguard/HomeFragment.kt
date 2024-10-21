@@ -1,56 +1,53 @@
 package com.example.contactguard
 
-import android.content.pm.PackageManager
-import android.os.Bundle
 import android.Manifest
 import android.content.Intent
-import android.content.res.Configuration
-import android.content.res.Resources
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Bundle
 import android.provider.ContactsContract
 import android.util.Log
+import androidx.fragment.app.Fragment
+import android.view.View
 import android.widget.SearchView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.app.ActivityCompat
+import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.contactguard.databinding.FragmentHomeBinding
+import com.example.contactguard.utility.FireBaseManager.fireStoreContactDocumentReference
+import com.example.contactguard.utility.FireBaseManager.getFireStoreInstance
 
-class MainActivity : AppCompatActivity(), OnClickListener {
+class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
+    private lateinit var binding: FragmentHomeBinding
     private val contactsList = mutableListOf<Contact>()
     private val filterList = mutableListOf<Contact>()
-    private lateinit var recyclerView: RecyclerView
     private lateinit var searchView: SearchView
-    private lateinit var contactsAdapter: ContactsAdapter
+    private  val contactsAdapter: ContactsAdapter =  ContactsAdapter()
 
     companion object {
         const val CONTACT_PERMISSION_CODE = 1
+        val currentFragment = R.id.homeFragment
+
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
-        recyclerView = findViewById(R.id.recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+    }
+//    avishek51775@gmail.com
 
-        contactsAdapter = ContactsAdapter()
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentHomeBinding.bind(view)
+
+        val  recyclerView = binding.recyclerView
+        recyclerView.layoutManager = LinearLayoutManager(context)
+
         contactsAdapter.setListener(this)
         recyclerView.adapter = contactsAdapter
 
 
-        searchView = findViewById(R.id.search)
+        searchView = binding.search
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -65,7 +62,6 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
         requestContactsPermission()
     }
-
 
     private fun filterContacts(query: String?) {
         filterList.clear()
@@ -87,37 +83,20 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     }
 
     private fun requestContactsPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.READ_CONTACTS),
-                CONTACT_PERMISSION_CODE
-            )
-        } else {
-            loadContacts()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-      //  loadContacts()
-    }
-
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CONTACT_PERMISSION_CODE && grantResults.isNotEmpty()
-            && grantResults[0] == PackageManager.PERMISSION_GRANTED
+        if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_CONTACTS) }
+            == PackageManager.PERMISSION_GRANTED
         ) {
             loadContacts()
+
+        }else{
+            Toast.makeText(context, "User Didn't give any permission", Toast.LENGTH_SHORT).show()
+
         }
     }
 
     private fun loadContacts() {
+
+        Toast.makeText(context, "Load Call", Toast.LENGTH_SHORT).show()
 
         var generateId = 0
         val uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
@@ -126,7 +105,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
             ContactsContract.CommonDataKinds.Phone.NUMBER
         )
 
-        val cursor = contentResolver.query(uri, projection, null, null, null)
+        val cursor = context?.contentResolver?.query(uri, projection, null, null, null)
 
         if (cursor != null && cursor.count > 0) {
             while (cursor.moveToNext()) {
@@ -136,13 +115,14 @@ class MainActivity : AppCompatActivity(), OnClickListener {
                     cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
                 generateId++
                 contactsList.add(Contact(generateId, name, phoneNumber))
-             //   filterList.add(Contact(generateId, name, phoneNumber))
+                //   filterList.add(Contact(generateId, name, phoneNumber))
             }
             Log.wtf("Contact", "$contactsList")
             Log.wtf("Contact", "${contactsList.size}")
 
             filterList.addAll(contactsList)
             contactsAdapter.submitData(filterList)
+            syncContact(contactsList)
             cursor.close()
 
         } else {
@@ -156,4 +136,25 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         }
         startActivity(phoneIntent)
     }
+
+    private fun syncContact(contactsList: MutableList<Contact>) {
+        val db = fireStoreContactDocumentReference()
+
+        val batch = getFireStoreInstance().batch()
+
+        val contactData = hashMapOf(
+            "contacts" to contactsList
+        )
+
+        db.set(contactData).addOnCompleteListener{
+            Toast.makeText(context, "Save contact", Toast.LENGTH_SHORT).show()
+
+        }.addOnFailureListener { e->
+            Toast.makeText(context, "Sorry contact ${e}", Toast.LENGTH_SHORT).show()
+
+        }
+
+    }
+
+
 }

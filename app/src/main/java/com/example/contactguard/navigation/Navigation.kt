@@ -15,12 +15,12 @@ object Navigation {
 
 
     //this method helps in fragment to fragment navigation
-    fun navigate(fragment: Fragment, from: Int? = null, to: Int, bundle: Bundle? = null) {
+    fun navigate(fragment: Fragment, popBackFragment: Int? = null, to: Int, bundle: Bundle? = null) {
         val navController = fragment.findNavController()
         val navOptionsBuilder = NavOptions.Builder()
 
-        if (from != null) {
-            navOptionsBuilder.setPopUpTo(from, true)
+        if (popBackFragment != null) {
+            navOptionsBuilder.setPopUpTo(popBackFragment, true)
         }
 
         val navOptions = navOptionsBuilder.build()

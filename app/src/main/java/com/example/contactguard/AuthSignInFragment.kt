@@ -1,5 +1,6 @@
 package com.example.contactguard
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -8,6 +9,7 @@ import com.example.chatapplication.ui.navigation.Navigation
 
 
 import com.example.contactguard.databinding.FragmentAuthSignInBinding
+import com.example.contactguard.utility.AuthManager.isLoggedIn
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 
@@ -20,6 +22,12 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
         super.onCreate(savedInstanceState)
     }
 
+    companion object {
+        val currentFragment = R.id.authSignInFragment
+        val destinationFragment = R.id.authSignUpFragment
+        val homeFragment = R.id.homeFragment
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         auth = FirebaseAuth.getInstance()
@@ -27,13 +35,14 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
         super.onViewCreated(view, savedInstanceState)
 
 
+        if(isLoggedIn()){
+            Navigation.navigate(this, currentFragment, homeFragment, null)
+        }
         binding.sendOtp.setOnClickListener {
             val userEmail = binding.etPhoneNo.text.toString()
             val userPassword = binding.etPassword.text.toString()
             if (userEmail.isNotBlank() && userPassword.isNotEmpty()) {
                 loginUser(userEmail, userPassword)
-
-
             }
         }
 
@@ -45,11 +54,7 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
             }
         }
         binding.createAccount.setOnClickListener {
-
-
-            Navigation.navigate(this, null, R.id.authSignUpFragment, null)
-
-
+            Navigation.navigate(this, currentFragment, destinationFragment, null)
         }
     }
 
@@ -82,6 +87,7 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
                     val user = auth.currentUser
                     if (user != null && user.isEmailVerified) {
                         // User email is verified, allow login
+                        Navigation.navigate(this, R.id.authSignInFragment, R.id.homeFragment, null)
                         Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
                     } else {
                         // User email is not verified, deny login
