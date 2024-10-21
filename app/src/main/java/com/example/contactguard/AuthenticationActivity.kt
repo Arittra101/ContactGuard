@@ -64,6 +64,7 @@ class AuthenticationActivity : AppCompatActivity() {
             )
         }
     }
+
     override fun getResources(): Resources {
         val res = super.getResources()
         val config = Configuration(res.configuration)

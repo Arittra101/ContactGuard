@@ -34,10 +34,8 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
         super.onViewCreated(view, savedInstanceState)
 
 
-        if(isLoggedIn()){
-            val intent = Intent(requireContext(), AuthenticationActivity::class.java)
-            startActivity(intent)
-        }
+        if(isLoggedIn()) navigationToHome()
+
         binding.sendOtp.setOnClickListener {
             val userEmail = binding.etPhoneNo.text.toString()
             val userPassword = binding.etPassword.text.toString()
@@ -86,21 +84,17 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     if (user != null && user.isEmailVerified) {
-                        // User email is verified, allow login
-                        val intent = Intent(requireContext(), AuthenticationActivity::class.java)
-                        startActivity(intent)
+                        navigationToHome()
                         Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
                     } else {
-                        // User email is not verified, deny login
                         Toast.makeText(
                             context,
                             "Please verify your email before logging in.",
                             Toast.LENGTH_SHORT
                         ).show()
-                        auth.signOut() // Sign out unverified user
+                        auth.signOut()
                     }
                 } else {
-                    // Login failed
                     Toast.makeText(
                         context,
                         "Authentication failed: ${task.exception?.message}",
@@ -109,5 +103,11 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
                 }
             }
     }
+   private  fun navigationToHome(){
+        val intent = Intent(requireContext(), AuthenticationActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent)
+    }
+
 
 }

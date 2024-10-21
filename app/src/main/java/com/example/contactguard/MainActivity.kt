@@ -3,13 +3,6 @@ package com.example.contactguard
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.Manifest
-import android.content.Intent
-import android.content.res.Configuration
-import android.content.res.Resources
-import android.net.Uri
-import android.provider.ContactsContract
-import android.util.Log
-import android.widget.SearchView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -17,8 +10,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
 
@@ -41,9 +32,6 @@ class MainActivity : AppCompatActivity() {
         requestContactsPermission()
     }
 
-
-
-
     private fun requestContactsPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
             != PackageManager.PERMISSION_GRANTED
@@ -57,12 +45,4 @@ class MainActivity : AppCompatActivity() {
 
         }
     }
-
-
-
-
-
-
-
-
 }
