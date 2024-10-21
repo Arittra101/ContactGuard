@@ -140,8 +140,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
     private fun syncContact(contactsList: MutableList<Contact>) {
         val db = fireStoreContactDocumentReference()
 
-        val batch = getFireStoreInstance().batch()
-
         val contactData = hashMapOf(
             "contacts" to contactsList
         )

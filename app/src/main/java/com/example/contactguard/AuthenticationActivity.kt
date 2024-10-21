@@ -11,19 +11,52 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import com.example.contactguard.MainActivity.Companion.CONTACT_PERMISSION_CODE
+import com.example.contactguard.databinding.ActivityAuthBinding
+import com.example.contactguard.navigation.socialNavigationList
+import com.example.contactguard.utility.AuthManager.isLoggedIn
+import com.google.android.material.tabs.TabLayoutMediator
 
 class AuthenticationActivity : AppCompatActivity() {
+
+    var pagerAdapter: ViewPagerAdapter? = null
+    private lateinit var binding: ActivityAuthBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_sign_in)
+        setContentView(R.layout.activity_auth)
+        binding = ActivityAuthBinding.inflate(layoutInflater)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        if(isLoggedIn()){
+
+            binding.viewPager.isVisible = true
+            binding.tabLayout.isVisible=true
+            viewpagerSetup()
+        }
         requestContactsPermission()
+
+    }
+
+    private fun viewpagerSetup() {
+        pagerAdapter = ViewPagerAdapter(this)
+        pagerAdapter?.apply {
+            addIdentifiers(socialNavigationList)
+        }
+        binding.viewPager.adapter = pagerAdapter
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = when (position) {
+                0 -> "Contact"
+                1 -> "Unsaved"
+                else -> "Tab One"
+            }
+        }.attach()
 
     }
 
@@ -42,7 +75,8 @@ class AuthenticationActivity : AppCompatActivity() {
         val res = super.getResources()
         val config = Configuration(res.configuration)
         config.fontScale = 1.0f // Prevent font scaling
-        res.updateConfiguration(config, res.displayMetrics)
+        createConfigurationContext(config) //Use createConfigurationContext instead
         return res
     }
+
 }
