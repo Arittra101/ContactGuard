@@ -8,7 +8,7 @@
 
     <stroke
         android:width="2dp"
-        android:color="#4C4747" /> <!-- Optional: Add a border/stroke -->
+        android:color="#F1E9E9" /> <!-- Optional: Add a border/stroke -->
 
     <padding
         android:left="10dp"

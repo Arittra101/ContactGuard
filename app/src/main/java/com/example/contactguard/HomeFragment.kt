@@ -12,7 +12,9 @@ import android.view.View
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.contactguard.databinding.FragmentHomeBinding
 import com.example.contactguard.utility.FireBaseManager.fireStoreContactDocumentReference
 import com.example.contactguard.utility.FireBaseManager.getFireStoreInstance
@@ -44,7 +46,34 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
         contactsAdapter.setListener(this)
         recyclerView.adapter = contactsAdapter
 
+        var isShow = true
+        var count =0;
 
+      /*  recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && isShow) {
+                    count++
+                    if(count==1){
+                        searchView.isVisible = false
+                        count=0
+                    }
+                    // Scrolling down, hide the search view
+                    searchView.animate().translationY(-searchView.height.toFloat()).setDuration(300)
+                    searchView.isVisible = false
+                    isShow = false
+                } else if (dy < 0 && !isShow) {
+                    // Scrolling up, show the search view
+                    count++
+                    if(count==1){
+                        searchView.isVisible = true
+                        count=0
+                    }
+                    isShow = true
+                    searchView.animate().translationY(0f).setDuration(300)
+                }
+            }
+        })*/
         searchView = binding.search
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -117,6 +146,60 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
             }
             Log.wtf("Contact", "$contactsList")
             Log.wtf("Contact", "${contactsList.size}")
+
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))
 
             filterList.addAll(contactsList)
             contactsAdapter.submitData(filterList)
