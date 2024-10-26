@@ -12,9 +12,7 @@ import android.view.View
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.contactguard.databinding.FragmentHomeBinding
 import com.example.contactguard.utility.FireBaseManager.fireStoreContactDocumentReference
 import com.example.contactguard.utility.FireBaseManager.getFireStoreInstance
@@ -22,6 +20,8 @@ import com.example.contactguard.utility.FireBaseManager.getFireStoreInstance
 class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
     private lateinit var binding: FragmentHomeBinding
     private val contactsList = mutableListOf<Contact>()
+    private val fireBaseContacts: MutableList<Contact> = mutableListOf()
+    private val localContactsList = mutableListOf<Contact>()
     private val filterList = mutableListOf<Contact>()
     private lateinit var searchView: SearchView
     private  val contactsAdapter: ContactsAdapter =  ContactsAdapter()
@@ -90,6 +90,10 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
         requestContactsPermission()
     }
 
+    private fun filteringLocalAndBack(){
+
+    }
+
     private fun filterContacts(query: String?) {
         filterList.clear()
 
@@ -114,6 +118,13 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
             == PackageManager.PERMISSION_GRANTED
         ) {
             loadContacts()
+            fetchContact{fetchContacts->
+                fireBaseContacts.clear()
+                fireBaseContacts.addAll(fetchContacts)
+                contactsAdapter.submitData(fireBaseContacts)
+                Log.wtf("atleast", fetchContacts[0].name)
+
+            }
 
         }else{
             Toast.makeText(context, "User Didn't give any permission", Toast.LENGTH_SHORT).show()
@@ -142,6 +153,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
                     cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
                 generateId++
                 contactsList.add(Contact(generateId, name, phoneNumber))
+                localContactsList.add(Contact(generateId, name, phoneNumber))
                 //   filterList.add(Contact(generateId, name, phoneNumber))
             }
             Log.wtf("Contact", "$contactsList")
@@ -229,11 +241,26 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
             Toast.makeText(context, "Save contact", Toast.LENGTH_SHORT).show()
 
         }.addOnFailureListener { e->
-            Toast.makeText(context, "Sorry contact ${e}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Sorry contact $e", Toast.LENGTH_SHORT).show()
 
         }
 
     }
 
+    private fun fetchContact(onResult: (List<Contact>) -> Unit) {
+        val db = fireStoreContactDocumentReference()
+        db.get()
+            .addOnSuccessListener { document ->
 
+                if(document!=null){
+                    val fetchContacts = document.toObject(UserContact::class.java)?.contacts?: emptyList()
+                    onResult(fetchContacts)
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d("Firestore", "get failed with ", exception)
+            }
+//        Log.wtf("Arittra", "$data")
+
+    }
 }

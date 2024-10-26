@@ -20,6 +20,7 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(isLoggedIn()) navigationToHome()
     }
 
     companion object {
@@ -34,7 +35,6 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
         super.onViewCreated(view, savedInstanceState)
 
 
-        if(isLoggedIn()) navigationToHome()
 
         binding.sendOtp.setOnClickListener {
             val userEmail = binding.etPhoneNo.text.toString()
