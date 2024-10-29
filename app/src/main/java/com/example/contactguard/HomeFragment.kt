@@ -91,6 +91,18 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
     }
 
     private fun filteringLocalAndBack(){
+        //filter mismatched mobile no local.number != firestore.number
+        // after that set to the recyleview
+
+
+        //make a list of merge local and firestore contact which is shown to first fragment
+        //in second fragment the one which is not available in firestore
+
+        val result  = fireBaseContacts.filter{serverContact->
+            localContactsList.any{loadContacts-> loadContacts.phoneNumber == serverContact.phoneNumber}
+
+        }
+        Log.wtf("Filterore","$result")
 
     }
 
@@ -113,6 +125,10 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
         contactsAdapter.submitData(filterList)
     }
 
+    private fun  insertFilterData(){
+
+    }
+
     private fun requestContactsPermission() {
         if (context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.READ_CONTACTS) }
             == PackageManager.PERMISSION_GRANTED
@@ -123,7 +139,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
                 fireBaseContacts.addAll(fetchContacts)
                 contactsAdapter.submitData(fireBaseContacts)
                 Log.wtf("atleast", fetchContacts[0].name)
-
+                filteringLocalAndBack()
             }
 
         }else{
@@ -159,6 +175,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
             Log.wtf("Contact", "$contactsList")
             Log.wtf("Contact", "${contactsList.size}")
 
+           /* contactsList.add(Contact(1, "name", "phoneNumber"))
             contactsList.add(Contact(1, "name", "phoneNumber"))
             contactsList.add(Contact(1, "name", "phoneNumber"))
             contactsList.add(Contact(1, "name", "phoneNumber"))
@@ -210,16 +227,15 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
             contactsList.add(Contact(1, "name", "phoneNumber"))
             contactsList.add(Contact(1, "name", "phoneNumber"))
             contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
+            contactsList.add(Contact(1, "name", "phoneNumber"))*/
 
             filterList.addAll(contactsList)
-            contactsAdapter.submitData(filterList)
-            syncContact(contactsList)
+            //contactsAdapter.submitData(filterList)
+            //syncContact(contactsList)
             cursor.close()
 
         } else {
-            Log.wtf("Contact", "No contacts found.")
+            Log.wtf("Contact", "No dcontacts found.")
         }
     }
 
