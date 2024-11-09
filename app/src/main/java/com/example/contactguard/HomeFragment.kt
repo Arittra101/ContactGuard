@@ -32,7 +32,6 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
 
 
@@ -64,14 +63,22 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
 
         })
 
+
+
         binding.floatingActionButton.setOnClickListener {
 
-            var passToBackend: MutableList<Contact> = mutableListOf()
-            passToBackend.addAll(fireBaseContacts)
-            passToBackend.addAll(unSyncContacts)
-            isProgressBarVisible(true)
+            if(!unSyncContacts.isEmpty()){
+                var passToBackend: MutableList<Contact> = mutableListOf()
+                passToBackend.addAll(fireBaseContacts)
+                passToBackend.addAll(unSyncContacts)
+                isProgressBarVisible(true)
 
-            syncContact(passToBackend)
+                syncContact(passToBackend)
+            }else{
+                Toast.makeText(context, "No contact need to Sync", Toast.LENGTH_SHORT).show()
+
+            }
+
         }
 
       //  syncContact(emptyList<Contact>())

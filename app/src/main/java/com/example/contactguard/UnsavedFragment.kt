@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.contactguard.bottomsheet.WarningBottomSheetFragment
 import com.example.contactguard.databinding.FragmentUnsavedBinding
 import com.example.contactguard.utility.FireBaseManager
 
@@ -21,9 +22,9 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
     private lateinit var binding: FragmentUnsavedBinding
     private  val contactsAdapter: ContactsAdapter =  ContactsAdapter()
     private val contactsList = mutableListOf<Contact>()
-    private val fireBaseContacts: MutableList<Contact> = mutableListOf()
-    private val localContactsList = mutableListOf<Contact>()
-    private val filterList = mutableListOf<Contact>()
+    private val fireBaseContacts: MutableList<Contact> = mutableListOf()  // fetching from firebase  contacts
+    private val localContactsList = mutableListOf<Contact>()               // my local phone contacts
+    private val filterList = mutableListOf<Contact>()                       // for search filters
     private lateinit var searchView: SearchView
     private var unSaveContacts : MutableList<Contact> = mutableListOf()
 
@@ -64,11 +65,21 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
 
         binding.floatingActionButton.setOnClickListener {
 
-            var passToBackend: MutableList<Contact> = mutableListOf()
-            passToBackend.addAll(fireBaseContacts)
-            passToBackend.addAll(unSaveContacts)
-            isProgressBarVisible(true)
-            saveToContact(unSaveContacts)
+            if(!unSaveContacts.isEmpty()){
+
+                var passToBackend: MutableList<Contact> = mutableListOf()
+                passToBackend.addAll(fireBaseContacts)
+                passToBackend.addAll(unSaveContacts)
+                isProgressBarVisible(true)
+                saveToContact(unSaveContacts)
+                val bottomSheetFragment = WarningBottomSheetFragment()
+                bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
+            }else{
+                val bottomSheetFragment = WarningBottomSheetFragment()
+                bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
+                Toast.makeText(context, "All contacts are saved on your phone!", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
     }
@@ -121,6 +132,7 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
     }
 
 
+    //Search Contact
     private fun filterContacts(query: String?) {
         filterList.clear()
 
@@ -150,7 +162,7 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
                 fireBaseContacts.addAll(fetchContacts)
                 contactsAdapter.submitData(fireBaseContacts)
                 Log.wtf("atleast", "$fetchContacts")
-                filteringLocalAndBack()
+                filteringUnSavedContactOnPhone()
             }
 
         }else{
@@ -164,7 +176,7 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
         }
     }
 
-    private fun filteringLocalAndBack(){
+    private fun filteringUnSavedContactOnPhone(){
         //jsb server e save nai
         unSaveContacts = fireBaseContacts.filterNot { loadContact ->
             localContactsList.any { serverContact ->
@@ -177,9 +189,6 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
             showRecycleView(false)
         }
         contactsAdapter.submitData(unSaveContacts)
-//        Log.wtf("Filterore","$result")
-        Log.wtf("Filterore","$unSaveContacts")
-//        Log.wtf("Filterore","- >>>>>>> $fireBaseContacts")
         isProgressBarVisible(false)
         binding.floatingActionButton.isEnabled = true
 
@@ -223,7 +232,6 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
                 generateId++
                 contactsList.add(Contact(generateId, name, phoneNumber))
                 localContactsList.add(Contact(generateId, name, phoneNumber))
-                //   filterList.add(Contact(generateId, name, phoneNumber))
             }
             Log.wtf("Contact", "$contactsList")
             Log.wtf("Contact", "${contactsList.size}")

@@ -64,8 +64,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:text="All contact are sync!"
+        android:text="All contacts are saved on your device!"
         android:textStyle="bold"
-        android:textSize="30sp"
+        android:textSize="20sp"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
