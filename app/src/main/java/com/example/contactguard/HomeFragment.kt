@@ -12,19 +12,20 @@ import android.view.View
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.contactguard.databinding.FragmentHomeBinding
 import com.example.contactguard.utility.FireBaseManager.fireStoreContactDocumentReference
-import com.example.contactguard.utility.FireBaseManager.getFireStoreInstance
 
 class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
     private lateinit var binding: FragmentHomeBinding
     private val contactsList = mutableListOf<Contact>()
     private val fireBaseContacts: MutableList<Contact> = mutableListOf()
     private val localContactsList = mutableListOf<Contact>()
-    private val filterList = mutableListOf<Contact>()
+    private val searchingFilterList = mutableListOf<Contact>()
     private lateinit var searchView: SearchView
     private  val contactsAdapter: ContactsAdapter =  ContactsAdapter()
+    private var unSyncContacts : MutableList<Contact> = mutableListOf()
 
     companion object {
         const val CONTACT_PERMISSION_CODE = 1
@@ -33,7 +34,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
         super.onCreate(savedInstanceState)
 
     }
-//    avishek51775@gmail.com
+
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,34 +47,10 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
         contactsAdapter.setListener(this)
         recyclerView.adapter = contactsAdapter
 
-        var isShow = true
-        var count =0;
 
-      /*  recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0 && isShow) {
-                    count++
-                    if(count==1){
-                        searchView.isVisible = false
-                        count=0
-                    }
-                    // Scrolling down, hide the search view
-                    searchView.animate().translationY(-searchView.height.toFloat()).setDuration(300)
-                    searchView.isVisible = false
-                    isShow = false
-                } else if (dy < 0 && !isShow) {
-                    // Scrolling up, show the search view
-                    count++
-                    if(count==1){
-                        searchView.isVisible = true
-                        count=0
-                    }
-                    isShow = true
-                    searchView.animate().translationY(0f).setDuration(300)
-                }
-            }
-        })*/
+
+        isProgressBarVisible(true)
+
         searchView = binding.search
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -81,48 +58,66 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                filterContacts(newText)
+                searchContacts(newText)
                 return true
             }
 
         })
 
+        binding.floatingActionButton.setOnClickListener {
+
+            var passToBackend: MutableList<Contact> = mutableListOf()
+            passToBackend.addAll(fireBaseContacts)
+            passToBackend.addAll(unSyncContacts)
+            isProgressBarVisible(true)
+
+            syncContact(passToBackend)
+        }
+
+      //  syncContact(emptyList<Contact>())
+
         requestContactsPermission()
     }
 
     private fun filteringLocalAndBack(){
-        //filter mismatched mobile no local.number != firestore.number
-        // after that set to the recyleview
+        //jsb server e save nai
+        unSyncContacts = localContactsList.filterNot { loadContact ->
+            fireBaseContacts.any { serverContact ->
+                loadContact.phoneNumber == serverContact.phoneNumber
+            }
+        }.toMutableList()
 
-
-        //make a list of merge local and firestore contact which is shown to first fragment
-        //in second fragment the one which is not available in firestore
-
-        val result  = fireBaseContacts.filter{serverContact->
-            localContactsList.any{loadContacts-> loadContacts.phoneNumber == serverContact.phoneNumber}
-
+        if(unSyncContacts.isEmpty()){
+            showSyncMsg(true)
+            showRecycleView(false)
         }
-        Log.wtf("Filterore","$result")
+        contactsAdapter.submitData(unSyncContacts)
+//        Log.wtf("Filterore","$result")
+        Log.wtf("Filterore","$unSyncContacts")
+//        Log.wtf("Filterore","- >>>>>>> $fireBaseContacts")
+        isProgressBarVisible(false)
+        binding.floatingActionButton.isEnabled = true
+
 
     }
 
-    private fun filterContacts(query: String?) {
-        filterList.clear()
+    private fun searchContacts(query: String?) {
+        searchingFilterList.clear()
 
         if (query.isNullOrEmpty()) {
-            filterList.addAll(contactsList)
+            searchingFilterList.addAll(unSyncContacts)
         } else {
             val searchQuery = query.lowercase()
-            for (contact in contactsList) {
+            for (contact in unSyncContacts) {
                 if (contact.name.lowercase()
                         .contains(searchQuery) || contact.phoneNumber.lowercase()
                         .contains(searchQuery)
                 ) {
-                    filterList.add(contact)
+                    searchingFilterList.add(contact)
                 }
             }
         }
-        contactsAdapter.submitData(filterList)
+        contactsAdapter.submitData(searchingFilterList)
     }
 
     private fun  insertFilterData(){
@@ -138,7 +133,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
                 fireBaseContacts.clear()
                 fireBaseContacts.addAll(fetchContacts)
                 contactsAdapter.submitData(fireBaseContacts)
-                Log.wtf("atleast", fetchContacts[0].name)
+                Log.wtf("atleast", "$fetchContacts")
                 filteringLocalAndBack()
             }
 
@@ -170,68 +165,12 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
                 generateId++
                 contactsList.add(Contact(generateId, name, phoneNumber))
                 localContactsList.add(Contact(generateId, name, phoneNumber))
-                //   filterList.add(Contact(generateId, name, phoneNumber))
             }
             Log.wtf("Contact", "$contactsList")
             Log.wtf("Contact", "${contactsList.size}")
 
-           /* contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))
-            contactsList.add(Contact(1, "name", "phoneNumber"))*/
 
-            filterList.addAll(contactsList)
-            //contactsAdapter.submitData(filterList)
-            //syncContact(contactsList)
+            searchingFilterList.addAll(contactsList)
             cursor.close()
 
         } else {
@@ -246,7 +185,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
         startActivity(phoneIntent)
     }
 
-    private fun syncContact(contactsList: MutableList<Contact>) {
+    private fun syncContact(contactsList: List<Contact>) {
         val db = fireStoreContactDocumentReference()
 
         val contactData = hashMapOf(
@@ -254,7 +193,11 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
         )
 
         db.set(contactData).addOnCompleteListener{
-            Toast.makeText(context, "Save contact", Toast.LENGTH_SHORT).show()
+            contactsAdapter.submitData(listOf())
+            isProgressBarVisible(false)
+            showRecycleView(false)
+            showSyncMsg(true)
+            Toast.makeText(context, "Sync contact", Toast.LENGTH_SHORT).show()
 
         }.addOnFailureListener { e->
             Toast.makeText(context, "Sorry contact $e", Toast.LENGTH_SHORT).show()
@@ -276,7 +219,17 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
             .addOnFailureListener { exception ->
                 Log.d("Firestore", "get failed with ", exception)
             }
-//        Log.wtf("Arittra", "$data")
 
+    }
+    private fun isProgressBarVisible(show: Boolean)
+    {
+        binding.progressBar.isVisible = show
+    }
+    private fun showRecycleView(show: Boolean){
+        binding.recyclerView.isVisible = show
+
+    }
+    private fun showSyncMsg(show: Boolean){
+        binding.syncMsg.isVisible = show
     }
 }

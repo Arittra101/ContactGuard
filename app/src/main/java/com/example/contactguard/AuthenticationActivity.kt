@@ -45,8 +45,9 @@ class AuthenticationActivity : AppCompatActivity() {
         binding.viewPager.adapter = pagerAdapter
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
-                0 -> "Contact"
-                1 -> "Unsaved"
+                0 -> "Unsync Contact"
+                1 -> "Unsaved Contact"
+                2 -> "Unsaved Contact"
                 else -> "Tab One"
             }
         }.attach()
