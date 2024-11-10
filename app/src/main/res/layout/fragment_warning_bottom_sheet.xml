@@ -88,6 +88,7 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tvConfirm"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:focusable="true"
@@ -107,7 +108,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:text="Cancel"
+                    android:text="Confirm"
                     android:paddingHorizontal="20dp"
                     android:paddingVertical="10dp"
                     android:textColor="#FFF3F3"
