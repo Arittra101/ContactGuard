@@ -13,7 +13,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
 class WarningBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_warning_bottom_sheet) {
     private lateinit var binding: FragmentWarningBottomSheetBinding
-
+    private lateinit var bottomSheetCallBack : BottomSheetCallBack
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,12 +25,26 @@ class WarningBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_w
         binding.cancel.setOnClickListener {
             dismiss()
         }
+        binding.tvCancel.setOnClickListener {
+            dismiss()
+        }
+        binding.tvConfirm.setOnClickListener {
+            bottomSheetCallBack.confirmClick()
+            dismiss()
+        }
     }
 
     override fun getTheme(): Int {
         return R.style.BottomSheetDialog
     }
 
+    fun setListener(bottomSheetCallBack: BottomSheetCallBack){
+        this.bottomSheetCallBack = bottomSheetCallBack
+    }
 
 
+
+}
+interface BottomSheetCallBack{
+    fun confirmClick()
 }
