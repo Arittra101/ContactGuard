@@ -17,7 +17,6 @@ class WarningBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_w
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -26,6 +25,10 @@ class WarningBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_w
         binding.cancel.setOnClickListener {
             dismiss()
         }
+    }
+
+    override fun getTheme(): Int {
+        return R.style.BottomSheetDialog
     }
 
 
