@@ -13,12 +13,13 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.contactguard.bottomsheet.BottomSheetCallBack
 import com.example.contactguard.bottomsheet.WarningBottomSheetFragment
 import com.example.contactguard.databinding.FragmentUnsavedBinding
 import com.example.contactguard.utility.FireBaseManager
 
 
-class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
+class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener, BottomSheetCallBack {
     private lateinit var binding: FragmentUnsavedBinding
     private  val contactsAdapter: ContactsAdapter =  ContactsAdapter()
     private val contactsList = mutableListOf<Contact>()
@@ -27,6 +28,8 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
     private val filterList = mutableListOf<Contact>()                       // for search filters
     private lateinit var searchView: SearchView
     private var unSaveContacts : MutableList<Contact> = mutableListOf()
+    private val bottomSheetFragment = WarningBottomSheetFragment()
+
 
 
     companion object {
@@ -50,6 +53,9 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
         requestContactsPermission()
         requestWriteContactsPermission()
 
+        bottomSheetFragment.setListener(this)
+
+
         searchView = binding.search
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -65,19 +71,15 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
 
         binding.floatingActionButton.setOnClickListener {
 
-            if(!unSaveContacts.isEmpty()){
-
-                var passToBackend: MutableList<Contact> = mutableListOf()
-                passToBackend.addAll(fireBaseContacts)
-                passToBackend.addAll(unSaveContacts)
-                isProgressBarVisible(true)
-                saveToContact(unSaveContacts)
-                val bottomSheetFragment = WarningBottomSheetFragment()
-                bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
-            }else{
-                val bottomSheetFragment = WarningBottomSheetFragment()
-                bottomSheetFragment.show(parentFragmentManager, bottomSheetFragment.tag)
-                Toast.makeText(context, "All contacts are saved on your phone!", Toast.LENGTH_SHORT).show()
+            if (unSaveContacts.isNotEmpty()) {
+                bottomSheetFragment.arguments = WarningBottomSheetFragment.createBundle("Saving Contacts!", "Are you sure to save those contacts?")
+                bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
+            } else {
+                Toast.makeText(
+                    context,
+                    "All contacts are already saved on your phone!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
         }
@@ -120,6 +122,7 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
             // Apply the batch for each contact to ensure all operations complete individually
             try {
                 contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
+//                unSaveContacts.clear()
                 Log.d("ContactSave", "Contact saved: ${contact.name}")
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -128,6 +131,10 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
         }
 
         // Notify the user after saving all contacts
+        isProgressBarVisible(false)
+        showRecycleView(false)
+        showSyncMsg(true)
+        this.unSaveContacts.clear()
         Toast.makeText(context, "All contacts saved successfully", Toast.LENGTH_SHORT).show()
     }
 
@@ -258,6 +265,16 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener {
     }
     private fun showSyncMsg(show: Boolean){
         binding.syncMsg.isVisible = show
+    }
+
+    override fun confirmClick() {
+        if (unSaveContacts.isNotEmpty()) {
+            val passToBackend: MutableList<Contact> = mutableListOf()
+            passToBackend.addAll(fireBaseContacts)
+            passToBackend.addAll(unSaveContacts)
+            isProgressBarVisible(true)
+            saveToContact(unSaveContacts)
+        }
     }
 
 }

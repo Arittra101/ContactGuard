@@ -4,20 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/redius_bg"
     tools:context=".bottomsheet.WarningBottomSheetFragment">
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:cardCornerRadius="30dp"
-        app:cardElevation="5dp"
-        app:layout_constraintStart_toStartOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/warningIcon"
@@ -51,7 +40,7 @@
                 android:textColor="#615E5E"
                 android:textStyle="bold"
                 android:textSize="20sp"
-                android:text="Sync Contacts"
+                android:text="Sync"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -69,17 +58,19 @@
                 android:layout_height="wrap_content" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tvCancel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:focusable="true"
+                android:layout_marginStart="42dp"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/msg"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:clickable="true"
                 app:layout_constraintEnd_toEndOf="@+id/guideline"
                 android:layout_marginVertical="18dp"
-                android:layout_marginEnd="15dp"
-                android:background="@drawable/redius_btn"
-                app:layout_constraintStart_toStartOf="@+id/msg">
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/redius_btn">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -98,15 +89,17 @@
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/tvConfirm"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:focusable="true"
                 app:layout_constraintTop_toBottomOf="@+id/msg"
-                app:layout_constraintEnd_toEndOf="@id/msg"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="42dp"
                 android:clickable="true"
                 android:layout_marginVertical="15dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginLeft="18dp"
+                android:layout_marginStart="10dp"
                 android:backgroundTint="#3AAF3F"
                 android:background="@drawable/redius_btn"
                 app:layout_constraintStart_toEndOf="@+id/guideline">
@@ -117,7 +110,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:text="Cancel"
+                    android:text="Confirm"
                     android:paddingHorizontal="20dp"
                     android:paddingVertical="10dp"
                     android:textColor="#FFF3F3"
@@ -126,11 +119,9 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 
-    </androidx.cardview.widget.CardView>
 
 
 
