@@ -14,10 +14,12 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.contactguard.bottomsheet.BottomSheetCallBack
+import com.example.contactguard.bottomsheet.WarningBottomSheetFragment
 import com.example.contactguard.databinding.FragmentHomeBinding
 import com.example.contactguard.utility.FireBaseManager.fireStoreContactDocumentReference
 
-class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
+class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener, BottomSheetCallBack {
     private lateinit var binding: FragmentHomeBinding
     private val contactsList = mutableListOf<Contact>()
     private val fireBaseContacts: MutableList<Contact> = mutableListOf()
@@ -26,6 +28,8 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
     private lateinit var searchView: SearchView
     private  val contactsAdapter: ContactsAdapter =  ContactsAdapter()
     private var unSyncContacts : MutableList<Contact> = mutableListOf()
+
+    private val bottomSheetFragment = WarningBottomSheetFragment()
 
     companion object {
         const val CONTACT_PERMISSION_CODE = 1
@@ -47,7 +51,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
         recyclerView.adapter = contactsAdapter
 
 
-
+        bottomSheetFragment.setListener(this)
         isProgressBarVisible(true)
 
         searchView = binding.search
@@ -63,22 +67,23 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
 
         })
 
+        binding.settings.setOnClickListener {
+//            Navigation.
+        }
+
 
 
         binding.floatingActionButton.setOnClickListener {
-
-            if(!unSyncContacts.isEmpty()){
-                var passToBackend: MutableList<Contact> = mutableListOf()
-                passToBackend.addAll(fireBaseContacts)
-                passToBackend.addAll(unSyncContacts)
-                isProgressBarVisible(true)
-
-                syncContact(passToBackend)
-            }else{
+            if (unSyncContacts.isNotEmpty()) {
+                bottomSheetFragment.arguments = WarningBottomSheetFragment.createBundle(
+                    "Sync Contacts!",
+                    "Are you sure to backup those contacts?"
+                )
+                bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
+            } else {
                 Toast.makeText(context, "No contact need to Sync", Toast.LENGTH_SHORT).show()
 
             }
-
         }
 
       //  syncContact(emptyList<Contact>())
@@ -238,5 +243,17 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener {
     }
     private fun showSyncMsg(show: Boolean){
         binding.syncMsg.isVisible = show
+    }
+
+    override fun confirmClick() {
+        if(unSyncContacts.isNotEmpty()) {
+            val passToBackend: MutableList<Contact> = mutableListOf()
+            passToBackend.addAll(fireBaseContacts)
+            passToBackend.addAll(unSyncContacts)
+            isProgressBarVisible(true)
+
+            syncContact(passToBackend)
+        }
+
     }
 }

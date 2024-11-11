@@ -72,6 +72,7 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener, Bot
         binding.floatingActionButton.setOnClickListener {
 
             if (unSaveContacts.isNotEmpty()) {
+                bottomSheetFragment.arguments = WarningBottomSheetFragment.createBundle("Saving Contacts!", "Are you sure to save those contacts?")
                 bottomSheetFragment.show(childFragmentManager, bottomSheetFragment.tag)
             } else {
                 Toast.makeText(
@@ -274,8 +275,6 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener, Bot
             isProgressBarVisible(true)
             saveToContact(unSaveContacts)
         }
-
-
     }
 
 }
