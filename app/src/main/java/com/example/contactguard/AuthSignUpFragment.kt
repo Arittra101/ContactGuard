@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Toast
 import com.example.chatapplication.ui.navigation.Navigation
 import com.example.contactguard.databinding.FragmentAuthSignUpBinding
+import com.example.contactguard.utility.AuthManager.firebaseInstance
 import com.google.firebase.auth.FirebaseAuth
 
 
@@ -26,7 +27,7 @@ class AuthSignUpFragment : Fragment(R.layout.fragment_auth_sign_up) {
         binding = FragmentAuthSignUpBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
 
-        auth = FirebaseAuth.getInstance()
+        auth = firebaseInstance
 
         binding.backSignIn.setOnClickListener {
             Navigation.navigate(this, currentFragment, destinationFragment,null)

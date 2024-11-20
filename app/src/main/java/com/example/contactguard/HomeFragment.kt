@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.contactguard.bottomsheet.BottomSheetCallBack
 import com.example.contactguard.bottomsheet.WarningBottomSheetFragment
 import com.example.contactguard.databinding.FragmentHomeBinding
+import com.example.contactguard.utility.AuthManager.firebaseInstance
+import com.example.contactguard.utility.AuthManager.logout
 import com.example.contactguard.utility.FireBaseManager.fireStoreContactDocumentReference
 
 class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener, BottomSheetCallBack {
@@ -67,8 +69,11 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener, BottomShe
 
         })
 
-        binding.settings.setOnClickListener {
-//            Navigation.
+        binding.logOut.setOnClickListener {
+            context?.let { it1 -> logout(it1) }
+            val intent = Intent(context, MainActivity::class.java)
+            startActivity(intent)
+            activity?.finish()
         }
 
 
@@ -209,7 +214,7 @@ class HomeFragment : Fragment(R.layout.fragment_home),OnClickListener, BottomShe
             isProgressBarVisible(false)
             showRecycleView(false)
             showSyncMsg(true)
-            Toast.makeText(context, "Sync contact", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Sync contact Successfully", Toast.LENGTH_SHORT).show()
 
         }.addOnFailureListener { e->
             Toast.makeText(context, "Sorry contact $e", Toast.LENGTH_SHORT).show()

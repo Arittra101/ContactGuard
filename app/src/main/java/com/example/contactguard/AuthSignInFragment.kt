@@ -9,7 +9,10 @@ import com.example.chatapplication.ui.navigation.Navigation
 
 
 import com.example.contactguard.databinding.FragmentAuthSignInBinding
-import com.example.contactguard.utility.AuthManager.isLoggedIn
+import com.example.contactguard.utility.AuthManager.firebaseInstance
+import com.example.contactguard.utility.AuthManager.isLogIn
+import com.example.contactguard.utility.AuthManager.isVerified
+import com.example.contactguard.utility.AuthManager.setLoggedIn
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 
@@ -20,7 +23,7 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(isLoggedIn()) navigationToHome()
+        if(isVerified() && context?.let { isLogIn(it) } == true) navigationToHome()
     }
 
     companion object {
@@ -30,7 +33,7 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        auth = FirebaseAuth.getInstance()
+        auth = firebaseInstance
         binding = FragmentAuthSignInBinding.bind(view)
         super.onViewCreated(view, savedInstanceState)
 
@@ -83,6 +86,7 @@ class AuthSignInFragment : Fragment(R.layout.fragment_auth_sign_in) {
             .addOnCompleteListener(requireActivity()) { task ->
                 if (task.isSuccessful) {
                     val user = auth.currentUser
+                    context?.let { setLoggedIn(it) }
                     if (user != null && user.isEmailVerified) {
                         navigationToHome()
                         Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()

@@ -12,14 +12,14 @@
         android:layout_height="wrap_content"
         app:iconifiedByDefault="false"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/settings"
+        app:layout_constraintEnd_toStartOf="@id/logOut"
         app:layout_constraintStart_toStartOf="parent"
         android:queryHint="Search Contacts" />
     <ImageView
-        android:id="@+id/settings"
+        android:id="@+id/logOut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/baseline_menu_24"
+        android:src="@drawable/baseline_logout_24"
         android:layout_marginEnd="10dp"
         app:layout_constraintTop_toTopOf="@+id/search"
         app:layout_constraintBottom_toBottomOf="@+id/search"

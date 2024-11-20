@@ -15,7 +15,6 @@ class WarningBottomSheetFragment : BottomSheetDialogFragment(R.layout.fragment_w
     var msg : String?=null
 
     companion object {
-        const val TAG = "ToffeePremiumPurchaseFragment"
         const val SHEET_TITLE = "SHEET_TITLE"
         const val SHEET_MSG = "SHEET_MSG"
         fun createBundle(sheetTitle: String, sheetMsg: String): Bundle {

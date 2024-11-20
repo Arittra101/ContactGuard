@@ -2,6 +2,7 @@ package com.example.contactguard
 
 import android.Manifest
 import android.content.ContentProviderOperation
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.contactguard.bottomsheet.BottomSheetCallBack
 import com.example.contactguard.bottomsheet.WarningBottomSheetFragment
 import com.example.contactguard.databinding.FragmentUnsavedBinding
+import com.example.contactguard.utility.AuthManager
 import com.example.contactguard.utility.FireBaseManager
 
 
@@ -83,6 +85,12 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener, Bot
             }
 
         }
+        binding.logOut.setOnClickListener {
+            context?.let { it1 -> AuthManager.logout(it1) }
+            val intent = Intent(context, MainActivity::class.java)
+            startActivity(intent)
+            activity?.finish()
+        }
 
     }
 
@@ -123,7 +131,7 @@ class UnsavedFragment : Fragment(R.layout.fragment_unsaved),OnClickListener, Bot
             try {
                 contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
 //                unSaveContacts.clear()
-                Log.d("ContactSave", "Contact saved: ${contact.name}")
+                Log.d("ContactSave", "Contact saved Successfully: ${contact.name}")
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(context, "Failed to save contact: ${contact.name}", Toast.LENGTH_SHORT).show()
